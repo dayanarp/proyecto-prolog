@@ -1,5 +1,5 @@
-% Primer problema de prolog del pro
-% no puedo enumerar las p tipo P1, P2, etc, eso me da conflicto
+% Primer problema de prolog del prolog
+% tarda 25000 ms aproximadamente
 
 pei :-
 	X = [P3,P1,P4,P2,P,P9,P7,P5,P6,P8],
