@@ -2,23 +2,26 @@
 % tarda 25000 ms aproximadamente
 
 pei :-
-	X = [P3,P1,P4,P2,P,P9,P7,P5,P6,P8],
+	X = [P4,P2,P3,P1,P,P9,P7,P5,P6,P8],
 	Y = [I3,I2,I,I1,I4],
         EvenDigits = [2,4,6,8],
 	OddDigits = [1,3,5,7,9],
         assign_digits(X,EvenDigits),
 	P6 + P8 =< 8,
-	P5 + P7 >= 10,
+	P5 + P7 >= 12,
 	P9 =< 6,
+	P3 * P >= 12,
+	P3 * P1 =< 8,
 	assign_digits(Y,OddDigits),
 	I4 > 5,
 	I1 + I2 >= 10,
+	I =< 3,
+	P2 * I >= 21,
 	I * P3 =< 8,
-	Num is (I*100 + P1*10 +P),
-        FNum is P2*Num,
+        FNum is P2*(I*100 + P1*10 +P),
 	SNum is (P6*1000 + I1*100 + P5*10 + P4),
 	FNum =:= SNum,
-	TNum is P3*Num,
+	TNum is P3*(I*100 + P1*10 +P),
 	QNum is (P8*100 + I2*10 + P7),
 	TNum =:= QNum,
 	KNum is (I4*1000 + I3*100 + P9*10 + P4),
@@ -27,7 +30,7 @@ pei :-
 	
 assign_digits([], _List).
 assign_digits([D|Ds],List) :-
-        select(D,List,NewList),
+        member(D,List),
         assign_digits(Ds, List).
 
 
