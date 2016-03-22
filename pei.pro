@@ -2,11 +2,12 @@
 % tarda 25000 ms aproximadamente
 
 pei :-
-	X = [P4,P2,P3,P1,P,P9,P5,P7,P6,P8],
-	Y = [I3,I2,I,I1,I4],
+	X = [P4,P3,P1,P,P9,P5,P7,P6,P8],
+	Y = [I3,I,I2,I1,I4],
         EvenDigits = [2,4,6,8],
 	OddDigits = [1,3,5,7,9],
         assign_digits(X,EvenDigits),
+	P2 is 8,
 	P8 =< 6,
 	P6 =< 6,
 	P6 + P8 =< 8,
