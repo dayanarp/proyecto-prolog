@@ -9,20 +9,18 @@
 %
 % se A el acarreo que se lleva en la suma y multiplicación.
 %
-% como P6I1 es el resultado de P2 * I, suponiendo que P3 * P1 es menor que 10 y no
-% se "llevan" dígitos, el menor resultado posible es que P6 = 2 y I1 = 1 que son 
-% los digitos par e impar menores posibles, así P2 * I =< 21, y como se tiene que
+% como P6 I1 es el resultado de P2 * I, suponiendo que P3 * P1 es menor que 10 y no
+% hay acarreo, el menor resultado posible es que P6 = 2 y I1 = 1 que son 
+% los digitos par e impar menores posibles, así P2 * I >= 21, y como se tiene que
 % P3 * I = P8, I debe ser =< 3 para que el al multiplicarse por el par mas pequeño
-% el resultado no sobrepase 8, que es el valor maximo para P8, por lo tanto, el
-% unico valor P2 que cumple que para los valores posibles de I es P2 = 8.
+% el resultado no sobrepase 8, que es el valor maximo para P8.
 %
 % como P6 + P8 + A = I4, se tiene que I4 =< 9 y entonces el valor máximo que pueden
 % tomar P6 y P8 es 6, de manera que el min A sea 1 y el min P6 + P8 es 8.
 %
 % para que la multiplicación de dos numeros pares produzca un numero impar, como 
-% en el caso P3 * P1 = I2, es porque P3 * P produjo al menos un A = 1, asi el 
-% menor umero de dos cifras producto de 2 pares el 16, por tanto el menor valor
-% para P7 es 6.
+% en el caso P3 * P1 = I2, es porque P3 * P produjo un A impar, asi los posibles
+% valores son 12, 16, 32 y 36 por tanto el mayor valor para P7 es 6.
 %
 % La suma de dos numeros impares como en I1 + I2 produce un numero par, por lo que
 % I1 + I2 = I3 evidencia un A >= 1 de P5 + P7 y como el minimo valor de dos cifras
@@ -47,22 +45,21 @@
 % A = 1 de I1 + I2, por lo que I1 + I2 >= 10.
 
 pei :-
-	X = [P4,P3,P1,P,P9,P5,P7,P6,P8],
-	Y = [I3,I,I2,I1,I4],
-        EvenDigits = [2,4,6,8],
-	OddDigits = [1,3,5,7,9],
-        assign_digits(X,EvenDigits),
-	P2 is 8,
+	Pares = [P4,P3,P1,P,P9,P5,P2,P7,P6,P8],
+	Impares = [I3,I,I2,I1,I4],
+        DigitosP = [2,4,6,8],
+	DigitosI = [1,3,5,7,9],
+        assign_digits(Pares,DigitosP),
 	P8 =< 6,
 	P6 =< 6,
 	P6 + P8 =< 8,
-	P7 >= 6,
+	P7 =< 6,
 	P5 + P7 >= 12,
 	P9 =< 6,
 	P3 * P >= 16,
 	P3 * P1 =< 8,
 	P4 >= 4,
-	assign_digits(Y,OddDigits),
+	assign_digits(Impares,DigitosI),
 	I4 >= 5,
 	I1 > 1,
 	I2 > 1,
@@ -70,15 +67,16 @@ pei :-
 	I =< 3,
 	P2 * I >= 21,
 	I * P3 =< 8,
-        FNum is P2*(I*100 + P1*10 +P),
-	SNum is (P6*1000 + I1*100 + P5*10 + P4),
-	FNum =:= SNum,
-	TNum is P3*(I*100 + P1*10 +P),
-	QNum is (P8*100 + I2*10 + P7),
-	TNum =:= QNum,
-	KNum is (I4*1000 + I3*100 + P9*10 + P4),
-	KNum =:= FNum + TNum*10,
-	format('\n ~d~d~d * \n  ~d~d\n ---- \n ~d~d~d~d + \n ~d~d~d\n ----\n ~d~d~d~d',[I,P1,P,P3,P2,P6,I1,P5,P4,P8,I2,P7,I4,I3,P9,P4]),!.
+	Factor1 is (I*100 + P1*10 +P),
+        Multiplicacion1 is P2*Factor1,
+	Sumando1 is (P6*1000 + I1*100 + P5*10 + P4),
+	Multiplicacion1 =:= Sumando1,
+	Multiplicacion2 is P3*Factor1,
+	Sumando2 is (P8*100 + I2*10 + P7),
+	Multiplicacion2 =:= Sumando2,
+	Resultado is (I4*1000 + I3*100 + P9*10 + P4),
+	Resultado =:= Sumando1 + Sumando2*10,
+	format('\n ~d *\n  ~d~d\n ---- \n ~d +\n ~d\n ----\n ~d',[Factor1,P3,P2,Sumando1,Sumando2,Resultado]),!.
 	
 assign_digits([], _List).
 assign_digits([D|Ds],List) :-
