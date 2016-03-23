@@ -11,7 +11,9 @@
 %
 % como P6 I1 es el resultado de P2 * I, suponiendo que P3 * P1 es menor que 10 y no
 % hay acarreo, el menor resultado posible es que P6 = 2 y I1 = 1 que son 
-% los digitos par e impar menores posibles, así P2 * I >= 21, y como se tiene que
+% los digitos par e impar menores posibles, y como es cierto siempre que la 
+% multiplicacion de un par por un impar es par, se debe tener un accareo impar
+% de P2 * P1, por tanto P2 * P1 >= 12. Ademas  como se tiene que
 % P3 * I = P8, I debe ser =< 3 para que el al multiplicarse por el par mas pequeño
 % el resultado no sobrepase 8, que es el valor maximo para P8.
 %
@@ -56,6 +58,7 @@ pei :-
 	P7 =< 6,
 	P5 + P7 >= 12,
 	P9 =< 6,
+	P2 * P1 >= 12,
 	P3 * P >= 16,
 	P3 * P1 =< 8,
 	P4 >= 4,
