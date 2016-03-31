@@ -70,19 +70,28 @@ push(Wagon, Arm1, Arm2, State, Op, Operations):-
     length(Arm2,L2),    
     append(Op,[push(above,L2), push(below,L1)], Operations), !. 
 
+%% pop(+[Wagon|Final]:list, +Arm1Y:list, +Arm2Y:list, +Op:list,
+%	?Operations:list, +State:list, ?Nstate:list)
+%
+% realiza las operaciones de enganche de los vagones según sea conveniente
+%
+% @param [Wagon|Final] estado del tren al que se quiere llegar
+% @param Arm1Y lista de vagones en el brazo superior de la Y
+% @param Arm2Y lista de vagones en el brazo inferior de la Y
+% @param Op lista de movimientos realizados hasta ahora
+% @param Operations lista final de movimientos
+% @param State estado actual del tren
+% @param Nstate nuevo estado del tren
 
-/* Pop */    
 pop(_ , [], [], Op, Operations, State, Nstate):-
     	reverse(Operations,Op),
 	reverse(Nstate,State),!.
-    
-pop([Wagon|Final], [Wagon| RestAbove], Below, Op, Operations, State, Nstate):-
+pop([Wagon|Final], [Wagon|RestArm1Y], Arm2Y, Op, Operations, State, Nstate):-
     append([pop(above,1)],Op,NewOpList),
-    pop(Final, RestAbove, Below, NewOpList, Operations, [Wagon|State], Nstate).
-
-pop([Wagon|Final], Above, [Wagon|RestBelow], Op, Operations, State, Nstate):-  
+    pop(Final, RestArm1Y, Arm2Y, NewOpList, Operations, [Wagon|State], Nstate).
+pop([Wagon|Final], Arm1Y, [Wagon|RestArm2Y], Op, Operations, State, Nstate):-  
     append([pop(below,1)],Op,NewOpList),
-    pop(Final, Above, RestBelow, NewOpList, Operations, [Wagon|State], Nstate).
+    pop(Final, Arm1Y, RestArm2Y, NewOpList, Operations, [Wagon|State], Nstate).
 
 /* Split lists */
 split_wagons(Wagon, [First|Rest], Accumulator, Result):-
