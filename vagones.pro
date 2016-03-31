@@ -93,7 +93,15 @@ pop([Wagon|Final], Arm1Y, [Wagon|RestArm2Y], Op, Operations, State, Nstate):-
     append([pop(below,1)],Op,NewOpList),
     pop(Final, Arm1Y, RestArm2Y, NewOpList, Operations, [Wagon|State], Nstate).
 
-/* Split lists */
+%% split_wagons(+Wagon:atom, +Rest:list, +Accumulator:list, ?Resul:list)
+%
+% divide los vagones según como es mas conveniente para desenganchar y enganchar
+%
+% @param Wagon vagon que sirve de auxiliar para la division del tren
+% @param Rest estado actual del tren
+% @param Accumulator ista de vagones auxiliar para la division
+% @param Result lista final con la division del tren
+
 split_wagons(Wagon, [First|Rest], Accumulator, Result):-
     Wagon \= First,
     append(Accumulator,[First],NewAcc),
