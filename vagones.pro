@@ -112,8 +112,8 @@ split_wagons(Wagon, Rest, Acc, [Acc,Rest]).
 %
 % elimina los movimientos repetidos resultando en la suma d elos mismos
 %
-% @param [A,B|Rest] 
-% @param Cargo
+% @param [A,B|Rest] lista de movimientos realizados
+% @param Cargo lista auxiliar de movimientos
 % @param Result lista final de movimientos realizados
 
 noReps([A,B|Rest],Cargo,Result) :-
