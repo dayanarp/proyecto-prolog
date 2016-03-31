@@ -23,9 +23,17 @@ vagones(In,Out,Operations):- In == Out.
 vagones(In,Out,Operations):- 
 	Out = [FstOut|RestOut],
 	moves(In,[FstOut|RestOut],Nstate,NewOp),
-    bfs(FstOut, Out , RestOut, Nstate, NewOp, AuxOps), 
-    noReps(AuxOps,[],Operations),!.
+	bfs(FstOut, Out , RestOut, Nstate, NewOp, AuxOps),
+	noReps(AuxOps,[],Operations),!.
 
+%% moves(+In:list, +[Wagon|Final]:list, ?Nstate, ?NewOp)
+%
+% calcula y ejecuta los movimientos adecuados.
+%
+% @param In Estado inicial
+% @param [Wagon|Final] estado final
+% @param Nstare nuevo estado generado de un movimiento
+% @param NewOp nueva lista de operaciones realizadas
 moves(In,[Wagon|Final],Nstate,NewOp) :-
 	push(Wagon, Arm1,Arm2, In, [], PushOp),
     pop([Wagon| Final], Arm2, Arm1, [], PopOp,[], Nstate),
