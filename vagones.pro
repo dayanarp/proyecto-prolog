@@ -1,25 +1,26 @@
 /*...
 */
 
-vagones(Entrada,[Elem| Final],Operaciones):- Entrada == [Elem| Final].
-vagones(Entrada,[Elem| Final],Operaciones):- 
-    push(Elem, Entrada, [], S1, S2, PushOp),
-    pop([Elem| Final], S2, S1, [], [], PopOp, NuevoEstado),
-    append(PushOp, PopOp, NewOp),
-    bfs(Elem, [Elem| Final] , Final, NuevoEstado, NewOp, AuxOperaciones), 
-    noReps(AuxOperaciones,[],Operaciones),!.
+vagones(In,Out,Operations):- In == Out.
+vagones(In,Out,Operations):- 
+	Out = [FstOut|RestOut],
+	moves(In,[FstOut|RestOut],Nstate,NewOp),
+    bfs(FstOut, Out , RestOut, Nstate, NewOp, AuxOperaciones), 
+    noReps(AuxOperaciones,[],Operations),!.
 
 
-bfs(_, Estado, _, Estado, Op, Op).
-bfs(Anterior, Final, [Elem | Fs], Estado, Op, Operaciones):-        
-    split(Anterior, Estado, [], [X, [Y | S]]),
-    append(X, [Y], NewEst),   
-    push(Elem, S, Op, S1, S2, PushOp),
-    pop([Elem | Fs], S2, S1, [], [], PopOp, NuevoEstado),
-    append(PushOp, PopOp, NewOp),
-    append(NewEst, NuevoEstado, NuevoEstado2), 
-    bfs(Elem,Final, Fs, NuevoEstado2,NewOp, Operaciones), !.
+bfs(_, State, _, State, Op, Op).
+bfs(Anterior, Final, [Elem | Fs], State, Op, Operations):-        
+    split(Anterior, State, [], [X, [Y | Arm]]),
+    append(X, [Y], NewEst), 
+    moves(Arm,[Elem|Final],Nstate,NewOp) , 
+    append(NewEst, Nstate, NuevoEstado2), 
+    bfs(Elem,Final, Fs, NuevoEstado2,NewOp, Operations), !.
     
+moves(In,[Elem|Final],Nstate,NewOp) :-
+	push(Elem, In, [], Arm1, Arm2, PushOp),
+    pop([Elem| Final], Arm2, Arm1, [], [], PopOp, Nstate),
+    append(PushOp, PopOp, NewOp), !.
 
 /* Split lists */
 split(Elem, [X | List], Z, Result):-
@@ -31,31 +32,31 @@ split(_, List, Acc, Result):-
 
 
 /* Push */
-push(Elem, Estado, Op, S1,S2, Operaciones):-
-    split(Elem, Estado, [], [S1,S2]),
-    length(S1,NS1),
-    length(S2,NS2),    
-    append(Op,[push(above,NS2), push(below,NS1)], Operaciones), !.
+push(Elem, State, Op, Arm1,Arm2, Operations):-
+    split(Elem, State, [], [Arm1,Arm2]),
+    length(Arm1,NArm1),
+    length(Arm2,NArm2),    
+    append(Op,[push(above,NArm2), push(below,NArm1)], Operations), !.
 
 
 /* Pop */    
-pop(_ , [], [], Op, Estado, Operaciones, NuevoEstado):-
-    reverse(Estado,NuevoEstado),
-    reverse(Op, Operaciones), !.
+pop(_ , [], [], Op, State, Operations, Nstate):-
+    reverse(State,Nstate),
+    reverse(Op, Operations), !.
     
-pop([Elem | Final], [], [FstBelow | RestBelow], Op, Estado, Operaciones, NuevoEstado):-
-    pop(Final, [], RestBelow, [pop(below,1)|Op], [FstBelow | Estado], Operaciones, NuevoEstado).
+pop([Elem | Final], [], [FstBelow | RestBelow], Op, State, Operations, Nstate):-
+    pop(Final, [], RestBelow, [pop(below,1)|Op], [FstBelow | State], Operations, Nstate).
     
-pop([Elem | Final], [FstAbove | RestAbove], [], Op, Estado, Operaciones, NuevoEstado):-
-    pop(Final, RestAbove, [], [pop(above,1)|Op], [FstAbove | Estado], Operaciones, NuevoEstado).
+pop([Elem | Final], [FstAbove | RestAbove], [], Op, State, Operations, Nstate):-
+    pop(Final, RestAbove, [], [pop(above,1)|Op], [FstAbove | State], Operations, Nstate).
     
-pop([Elem | Final], [FstAbove | RestAbove], [FstBelow | RestBelow], Op, Estado, Operaciones, NuevoEstado):-
+pop([Elem | Final], [FstAbove | RestAbove], [FstBelow | RestBelow], Op, State, Operations, Nstate):-
     X = FstAbove, Elem == X,
-    pop(Final, RestAbove, [FstBelow | RestBelow], [pop(above,1)|Op], [X | Estado], Operaciones, NuevoEstado).
+    pop(Final, RestAbove, [FstBelow | RestBelow], [pop(above,1)|Op], [X | State], Operations, Nstate).
 
-pop([Elem | Final], [FstAbove | RestAbove], [FstBelow | RestBelow], Op, Estado, Operaciones, NuevoEstado):-  
+pop([Elem | Final], [FstAbove | RestAbove], [FstBelow | RestBelow], Op, State, Operations, Nstate):-  
     X = FstBelow, Elem == X,
-    pop(Final, [FstAbove | RestAbove], RestBelow, [pop(below,1)|Op], [X | Estado], Operaciones, NuevoEstado).
+    pop(Final, [FstAbove | RestAbove], RestBelow, [pop(below,1)|Op], [X | State], Operations, Nstate).
     
   
 
@@ -70,4 +71,5 @@ rep(X,Y,Z):- X = pop(above,A), Y = pop(above,B), C is A + B, Z = [pop(above,C)].
 rep(X,Y,Z):- X = push(below,A), Y = push(below,B), C is A + B, Z = [push(below,C)].
 rep(X,Y,Z):- X = push(above,A), Y = push(above,B), C is A + B, Z = [push(above,C)].
 rep(X,Y,Z):- Z = [X,Y].
+
 
