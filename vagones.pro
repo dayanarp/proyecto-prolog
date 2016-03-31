@@ -34,20 +34,29 @@ vagones(In,Out,Operations):-
 % @param [Wagon|Final] estado final
 % @param Nstare nuevo estado generado de un movimiento
 % @param NewOp nueva lista de operaciones realizadas
+
 moves(In,[Wagon|Final],Nstate,NewOp) :-
 	push(Wagon, Arm1,Arm2, In, [], PushOp),
     pop([Wagon| Final], Arm2, Arm1, [], PopOp,[], Nstate),
     append(PushOp, PopOp, NewOp), !.
 
+%% bfs(+Old:atom,+Final:list,+[Wagon|Rest]:list)
+%
+%
+%
+
 bfs(_, State, _, State, Op, Op).
 bfs(Old, Final, [Wagon | Rest], State, Op, Operations):-        
-    split_wagons(Old, State, [], [X, [Y | Arm]]),
-    append(X, [Y], NewEst), 
-    moves(Arm,[Wagon|Final],Nstate,NewOp) , 
+    split_wagons(Old, State, [], [A1, [A2 | A2s]]),
+    append(A1, [A2], NewEst), 
+    moves(A2s,[Wagon|Final],Nstate,NewOp) , 
     append(NewEst, Nstate, Nstate2), 
     bfs(Wagon,Final, Rest, Nstate2,NewOp, Operations), !.
     
-/* Push */
+%% push(+Wagon:atom, +Arm1:list, +Arm2:list,)
+%
+%
+%
 push(Wagon, Arm1, Arm2, State, Op, Operations):-
     split_wagons(Wagon, State, [], [Arm1,Arm2]),
     length(Arm1,L1),
