@@ -1,5 +1,23 @@
-/*...
-*/
+%% Vagones
+%
+% calcula las cantidad mínima de operaciones necesarias para que
+% dado un estado inicial con un orden de los vagones de un tren, se obtenga 
+% un estado final dado, obtenido de enganchar y desenganchar vagones según
+% sea conveniente para alcanzar el objetivo. El resultado es mostrando en 
+% pantalla como una lista de movimientos (enganches y desenganches).
+%
+% @autores:
+%	- Dayana Rodrigues	10-10615
+%	- Roberto Romero	10-106142
+
+%% vagones(+In:list, +Out:list, ?Operations:list)
+%
+% calcula la lista de operaciones necesarias para pasar del estado inicial
+% al estado final
+%
+% @param In estado incial de los vagones del tren
+% @param Out estado final de los vagones del tren
+% @param Operations lista de movimientos resultante
 
 vagones(In,Out,Operations):- In == Out.
 vagones(In,Out,Operations):- 
@@ -7,6 +25,11 @@ vagones(In,Out,Operations):-
 	moves(In,[FstOut|RestOut],Nstate,NewOp),
     bfs(FstOut, Out , RestOut, Nstate, NewOp, AuxOps), 
     noReps(AuxOps,[],Operations),!.
+
+moves(In,[Wagon|Final],Nstate,NewOp) :-
+	push(Wagon, Arm1,Arm2, In, [], PushOp),
+    pop([Wagon| Final], Arm2, Arm1, [], PopOp,[], Nstate),
+    append(PushOp, PopOp, NewOp), !.
 
 bfs(_, State, _, State, Op, Op).
 bfs(Old, Final, [Wagon | Rest], State, Op, Operations):-        
@@ -16,19 +39,6 @@ bfs(Old, Final, [Wagon | Rest], State, Op, Operations):-
     append(NewEst, Nstate, Nstate2), 
     bfs(Wagon,Final, Rest, Nstate2,NewOp, Operations), !.
     
-moves(In,[Wagon|Final],Nstate,NewOp) :-
-	push(Wagon, Arm1,Arm2, In, [], PushOp),
-    pop([Wagon| Final], Arm2, Arm1, [], PopOp,[], Nstate),
-    append(PushOp, PopOp, NewOp), !.
-
-/* Split lists */
-split_wagons(Wagon, [First|Rest], Accumulator, Result):-
-    Wagon \= First,
-    append(Accumulator,[First],NewAcc),
-    split_wagons(Wagon, Rest, NewAcc, Result).
-split_wagons(Wagon, Rest, Acc, [Acc,Rest]).
-
-
 /* Push */
 push(Wagon, Arm1, Arm2, State, Op, Operations):-
     split_wagons(Wagon, State, [], [Arm1,Arm2]),
@@ -49,8 +59,13 @@ pop([Wagon|Final], [Wagon| RestAbove], Below, Op, Operations, State, Nstate):-
 pop([Wagon|Final], Above, [Wagon|RestBelow], Op, Operations, State, Nstate):-  
     append([pop(below,1)],Op,NewOpList),
     pop(Final, Above, RestBelow, NewOpList, Operations, [Wagon|State], Nstate).
-    
-  
+
+/* Split lists */
+split_wagons(Wagon, [First|Rest], Accumulator, Result):-
+    Wagon \= First,
+    append(Accumulator,[First],NewAcc),
+    split_wagons(Wagon, Rest, NewAcc, Result).
+split_wagons(Wagon, Rest, Acc, [Acc,Rest]).
 
 noReps([A,B|Rest],Cargo,Result) :-rep(A,B,Bond), [A,B] \= Bond, append(Bond,Rest,NList), noReps(NList,[],AuxResult), append(Ncargo,AuxResult,Result),!.
 
