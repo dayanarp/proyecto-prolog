@@ -53,10 +53,17 @@ bfs(Old, Final, [Wagon | Rest], State, Op, Operations):-
     append(NewEst, Nstate, Nstate2), 
     bfs(Wagon,Final, Rest, Nstate2,NewOp, Operations), !.
     
-%% push(+Wagon:atom, +Arm1:list, +Arm2:list,)
+%% push(+Wagon:atom, +Arm1:list, +Arm2:list,+State:list, +Op:list, ?Operations:list)
 %
+% divide los vagones del tren segun como sea conveniente y los desengancha
 %
-%
+% @param Wagon elemento que sirve de auxliar para la división de vagones
+% @param Arm1 lista de vagones en el brazo superior de la Y
+% @param Arm2 lista de vagones en el brazo inferioir de la Y
+% @param State estado actual del tren
+% @param Op lista de movimientos realizados hasta ahora
+% @param Operationes lista final de movimientos realizados
+
 push(Wagon, Arm1, Arm2, State, Op, Operations):-
     split_wagons(Wagon, State, [], [Arm1,Arm2]),
     length(Arm1,L1),
