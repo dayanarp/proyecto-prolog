@@ -12,7 +12,7 @@
 	pei/0 triunfa presentando en pantalla la solución al problema.
 
 	Para generar la solución:
-		1.- Se generan posibles soluciones para los multiplicadores, de
+		1.- Se generan posibles soluciones para los digitos, de
 				manera que cumplan los siguientes requisitos:
 				Haciendo:	
 									I0P0P1   *
