@@ -8,55 +8,47 @@ vagones(In,Out,Operations):-
     bfs(FstOut, Out , RestOut, Nstate, NewOp, AuxOps), 
     noReps(AuxOps,[],Operations),!.
 
-
 bfs(_, State, _, State, Op, Op).
-bfs(Anterior, Final, [Wagon | Rest], State, Op, Operations):-        
-    split(Anterior, State, [], [X, [Y | Arm]]),
+bfs(Old, Final, [Wagon | Rest], State, Op, Operations):-        
+    split_wagons(Old, State, [], [X, [Y | Arm]]),
     append(X, [Y], NewEst), 
     moves(Arm,[Wagon|Final],Nstate,NewOp) , 
     append(NewEst, Nstate, Nstate2), 
     bfs(Wagon,Final, Rest, Nstate2,NewOp, Operations), !.
     
 moves(In,[Wagon|Final],Nstate,NewOp) :-
-	push(Wagon, In, [], Arm1, Arm2, PushOp),
-    pop([Wagon| Final], Arm2, Arm1, [], [], PopOp, Nstate),
+	push(Wagon, Arm1,Arm2, In, [], PushOp),
+    pop([Wagon| Final], Arm2, Arm1, [], PopOp,[], Nstate),
     append(PushOp, PopOp, NewOp), !.
 
 /* Split lists */
-split(Wagon, [X | List], Z, Result):-
-    Wagon \= X,
-    split(Wagon, List, [X | Z], Result).
-split(_, List, Acc, Result):-
-    reverse(Acc,X),
-    Result = [X,List].
+split_wagons(Wagon, [First|Rest], Accumulator, Result):-
+    Wagon \= First,
+    append(Accumulator,[First],NewAcc),
+    split_wagons(Wagon, Rest, NewAcc, Result).
+split_wagons(Wagon, Rest, Acc, [Acc,Rest]).
 
 
 /* Push */
-push(Wagon, State, Op, Arm1,Arm2, Operations):-
-    split(Wagon, State, [], [Arm1,Arm2]),
-    length(Arm1,NArm1),
-    length(Arm2,NArm2),    
-    append(Op,[push(above,NArm2), push(below,NArm1)], Operations), !.
+push(Wagon, Arm1, Arm2, State, Op, Operations):-
+    split_wagons(Wagon, State, [], [Arm1,Arm2]),
+    length(Arm1,L1),
+    length(Arm2,L2),    
+    append(Op,[push(above,L2), push(below,L1)], Operations), !. 
 
 
 /* Pop */    
-pop(_ , [], [], Op, State, Operations, Nstate):-
-    reverse(State,Nstate),
-    reverse(Op, Operations), !.
+pop(_ , [], [], Op, Operations, State, Nstate):-
+    	reverse(Operations,Op),
+	reverse(Nstate,State),!.
     
-pop([Wagon | Final], [], [FstBelow | RestBelow], Op, State, Operations, Nstate):-
-    pop(Final, [], RestBelow, [pop(below,1)|Op], [FstBelow | State], Operations, Nstate).
-    
-pop([Wagon | Final], [FstAbove | RestAbove], [], Op, State, Operations, Nstate):-
-    pop(Final, RestAbove, [], [pop(above,1)|Op], [FstAbove | State], Operations, Nstate).
-    
-pop([Wagon | Final], [FstAbove | RestAbove], [FstBelow | RestBelow], Op, State, Operations, Nstate):-
-    X = FstAbove, Wagon == X,
-    pop(Final, RestAbove, [FstBelow | RestBelow], [pop(above,1)|Op], [X | State], Operations, Nstate).
+pop([Wagon|Final], [Wagon| RestAbove], Below, Op, Operations, State, Nstate):-
+    append([pop(above,1)],Op,NewOpList),
+    pop(Final, RestAbove, Below, NewOpList, Operations, [Wagon|State], Nstate).
 
-pop([Wagon | Final], [FstAbove | RestAbove], [FstBelow | RestBelow], Op, State, Operations, Nstate):-  
-    X = FstBelow, Wagon == X,
-    pop(Final, [FstAbove | RestAbove], RestBelow, [pop(below,1)|Op], [X | State], Operations, Nstate).
+pop([Wagon|Final], Above, [Wagon|RestBelow], Op, Operations, State, Nstate):-  
+    append([pop(below,1)],Op,NewOpList),
+    pop(Final, Above, RestBelow, NewOpList, Operations, [Wagon|State], Nstate).
     
   
 
