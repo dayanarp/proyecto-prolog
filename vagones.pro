@@ -40,14 +40,20 @@ moves(In,[Wagon|Final],Nstate,NewOp) :-
     pop([Wagon| Final], Arm2, Arm1, [], PopOp,[], Nstate),
     append(PushOp, PopOp, NewOp), !.
 
-%% bfs(+Old:atom,+Final:list,+[Wagon|Rest]:list)
+%% bfs(+Old:atom,+Final:list,+[Wagon|Rest]:list, State:list, Op:list, Operations:list)
 %
-%
-%
+% recorre el espacio de soluciones
+% 
+% @param Old vagon auxiliar para calculos
+% @param Final estado al que se quiere llegar
+% @param [Wagon|Rest] estado auxiliar para calculos
+% @param State estado actual del tren
+% @param Op lista de movimientos realizados hasta ahora
+% @param Operations lista final de movimientos 
 
 bfs(_, State, _, State, Op, Op).
-bfs(Old, Final, [Wagon | Rest], State, Op, Operations):-        
-    split_wagons(Old, State, [], [A1, [A2 | A2s]]),
+bfs(Old, Final, [Wagon|Rest], State, Op, Operations):-        
+    split_wagons(Old, State, [], [A1, [A2|A2s]]),
     append(A1, [A2], NewEst), 
     moves(A2s,[Wagon|Final],Nstate,NewOp) , 
     append(NewEst, Nstate, Nstate2), 
