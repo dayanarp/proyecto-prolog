@@ -1,48 +1,52 @@
-/*
- 	IPP  *
-	 PP
-	----
-	PIPP +
-	PIP
-	----
-	IIPP
-
-	Donde P representa algún dígito par e I representa algún dígito impar.
-	
-	pei/0 triunfa presentando en pantalla la solución al problema.
-
-	Para generar la solución:
-		1.- Se generan posibles soluciones para los digitos, de
-				manera que cumplan los siguientes requisitos:
-				Haciendo:	
-									I0P0P1   *
-									  P2P3
-									--------
-									P6I3P7P5 +
-									P8I4P9
-									--------
-									I1I2P4P5
-			
-				Entonces debe cumplirse que:
-					- P3*I0 + el acarreo de P3*P2 (que es a lo sumo 6) debe ser al menos
-						21, por tanto I0 debe ser mayor que 1.
-					- P2*I0 es cuando mucho el digíto par más grande, es decir, 8.
-					- Para el cumplimiento de los items anteriores se tiene entonces
-						que I0 = 3 y P2 = 2.
-					- Los Acarreos de P0*P3 y P2*P1 deben ser al menos 1.
-					- P6 y P8 deben ser al menos 2, por lo que I1 debe ser al menos 5.
-					- Como P3*I0 + A >= 21 e I0 = 3, P3 debe ser al menos 6, por lo que
-						P3*I0 dene ser al menos 18. 
-					- El Acarreo de P7+P9 debe ser al menos 1, por lo que P7+P9 en al
-						menos 10.
-					- P6 + P8 es a lo sumo el dígito par más grande, es decir 8.
-					- Como P6 y P8 son al menos 2, su suma es al menos 4.
-					- El acarreo de I3+I4 debe ser al menos 1, por lo que I3+I4 es
-						al menos 10.
-
-		2.- Se verifican las soluciones aprovechando el backtracking del lenguaje.
-		3.- Se muestra en pantalla la solución.
-*/ 
+%% Pei
+%
+%	IPP  *
+%	 PP
+%	----
+%	PIPP +
+%	PIP
+%	----
+%	IIPP
+%
+%	Donde P representa algún dígito par e I representa algún dígito impar.
+%	
+%	pei/0 triunfa presentando en pantalla la solución al problema.
+%
+%	Para generar la solución:
+%		1.- Se generan posibles soluciones para los digitos, de
+%			manera que cumplan los siguientes requisitos:
+%				Haciendo:	
+%								I0P0P1   *
+%								  P2P3
+%								--------
+%								P6I3P7P5 +
+%								P8I4P9
+%								--------
+%								I1I2P4P5
+%			
+%				Entonces debe cumplirse que:
+%					- P3*I0 + el acarreo de P3*P2 (que es a lo sumo 6) debe ser al menos
+%						21, por tanto I0 debe ser mayor que 1.
+%					- P2*I0 es cuando mucho el digíto par más grande, es decir, 8.
+%					- Para el cumplimiento de los items anteriores se tiene entonces
+%						que I0 = 3 y P2 = 2.
+%					- Los Acarreos de P0*P3 y P2*P1 deben ser al menos 1.
+%					- P6 y P8 deben ser al menos 2, por lo que I1 debe ser al menos 5.
+%					- Como P3*I0 + A >= 21 e I0 = 3, P3 debe ser al menos 6, por lo que
+%						P3*I0 dene ser al menos 18. 
+%					- El Acarreo de P7+P9 debe ser al menos 1, por lo que P7+P9 en al
+%						menos 10.
+%					- P6 + P8 es a lo sumo el dígito par más grande, es decir 8.
+%					- Como P6 y P8 son al menos 2, su suma es al menos 4.
+%					- El acarreo de I3+I4 debe ser al menos 1, por lo que I3+I4 es
+%						al menos 10.
+%
+%		2.- Se verifican las soluciones aprovechando el backtracking del lenguaje.
+%		3.- Se muestra en pantalla la solución.
+%
+% @autores: 
+%	- Dayana Rodrigues 	10-10615
+%	- Roberto Romero 	10-10642
 
 pei :- 
 	Even = [0,2,4,6,8],
@@ -75,6 +79,12 @@ pei :-
 	PIP is P2*IPP,
 	format('\n  ~d *\n   ~d\n ----\n ~d +\n ~d\n ----\n ~d',[IPP, PP, PIPP,PIP,IIPP]),!.
 
+%% assign(?L1:list, ?L2: list)
+%
+% asigna a los elementos de L1 elementos de L2.
+%
+% @param [X|XS] lista de elementos a asignar
+% @param L lista de elementos a ser asignados
 
 assign([],L).
 assign([X|XS],L) :- member(X,L), assign(XS, L).
