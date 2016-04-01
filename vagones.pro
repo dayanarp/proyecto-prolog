@@ -20,43 +20,44 @@
 % @param Operations lista de movimientos resultante
 
 vagones(In,Out,Operations):- In == Out.
-vagones(In,Out,Operations):- 
-	Out = [FstOut|RestOut],
-	moves(In,[FstOut|RestOut],Nstate,NewOp),
-	bfs(FstOut, Out , RestOut, Nstate, NewOp, AuxOps),
-	noReps(AuxOps,[],Operations),!.
+vagones(In,Out,Operations):-
+        Out = [FstOut|RestOut],
+        moves(In,[FstOut|RestOut],[],Nstate,NewOp),
+        bfs(FstOut, Out , RestOut, Nstate, NewOp, AuxOps),
+        noReps(AuxOps,[],Operations),!.
 
-%% moves(+In:list, +[Wagon|Final]:list, ?Nstate, ?NewOp)
+%% moves(+In:list, +[Wagon|Final]:list, +Op:list ?Nstate, ?NewOp)
 %
 % calcula y ejecuta los movimientos adecuados.
 %
 % @param In Estado inicial
 % @param [Wagon|Final] estado final
+% @param Op lista de operaciones realizada hasta ahora
 % @param Nstare nuevo estado generado de un movimiento
 % @param NewOp nueva lista de operaciones realizadas
 
-moves(In,[Wagon|Final],Nstate,NewOp) :-
-	push(Wagon, Arm1,Arm2, In, [], PushOp),
+moves(In,[Wagon|Final],Op,Nstate,NewOp) :-
+    push(Wagon, Arm1,Arm2, In, Op, PushOp),
     pop([Wagon| Final], Arm2, Arm1, [], PopOp,[], Nstate),
     append(PushOp, PopOp, NewOp), !.
 
 %% bfs(+Old:atom,+Final:list,+[Wagon|Rest]:list, State:list, Op:list, Operations:list)
 %
 % recorre el espacio de soluciones
-% 
+%
 % @param Old vagon auxiliar para calculos
 % @param Final estado al que se quiere llegar
 % @param [Wagon|Rest] estado auxiliar para calculos
 % @param State estado actual del tren
 % @param Op lista de movimientos realizados hasta ahora
-% @param Operations lista final de movimientos 
+% @param Operations lista final de movimientos
 
 bfs(_, State, _, State, Op, Op).
-bfs(Old, Final, [Wagon|Rest], State, Op, Operations):-        
+bfs(Old, Final, [Wagon|Rest], State, Op, Operations):-
     split_wagons(Old, State, [], [A1, [A2|A2s]]),
-    append(A1, [A2], NewEst), 
-    moves(A2s,[Wagon|Final],Nstate,NewOp) , 
-    append(NewEst, Nstate, Nstate2), 
+    append(A1, [A2], NewEst),
+    moves(A2s,[Wagon|Final],Op,Nstate,NewOp) ,
+    append(NewEst, Nstate, Nstate2),
     bfs(Wagon,Final, Rest, Nstate2,NewOp, Operations), !.
     
 %% push(+Wagon:atom, +Arm1:list, +Arm2:list,+State:list, +Op:list, ?Operations:list)
@@ -90,14 +91,20 @@ push(Wagon, Arm1, Arm2, State, Op, Operations):-
 % @param Nstate nuevo estado del tren
 
 pop(_ , [], [], Op, Operations, State, Nstate):-
-    	reverse(Operations,Op),
-	reverse(Nstate,State),!.
+        reverse(Operations,Op),
+        reverse(Nstate,State),!.
 pop([Wagon|Final], [Wagon|RestArm1Y], Arm2Y, Op, Operations, State, Nstate):-
     append([pop(above,1)],Op,NewOpList),
     pop(Final, RestArm1Y, Arm2Y, NewOpList, Operations, [Wagon|State], Nstate).
-pop([Wagon|Final], Arm1Y, [Wagon|RestArm2Y], Op, Operations, State, Nstate):-  
+pop([Wagon|Final], Arm1Y, [Wagon|RestArm2Y], Op, Operations, State, Nstate):-
     append([pop(below,1)],Op,NewOpList),
     pop(Final, Arm1Y, RestArm2Y, NewOpList, Operations, [Wagon|State], Nstate).
+pop([Wagon| Final], [], [FirstArm2Y |RestArm2Y], Op, Operations, State, Nstate):-
+    append([pop(below,1)],Op, NewOpList),
+    pop(Final, [], RestArm2Y, NewOpList, Operations, [FirstArm2Y|State], Nstate).
+pop([Wagon|Final], [FirstArm1Y|RestArm1Y], [], Op, Operations, State, Nstate):-
+    append([pop(above,1)],Op, NewOpList),
+    pop(Final, RestArm1Y, [], NewOpList, Operations,[FirstArm1Y|State], Nstate).
 
 %% split_wagons(+Wagon:atom, +Rest:list, +Accumulator:list, ?Resul:list)
 %
